@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import TodoForm from './TodoForm';
 import TodoItem from './TodoItem';
+import { useTodoContext } from '../context/TodoContext';
 import { Todo } from '../types/Todo';
 
 const TodoList: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const { todos, addTodo, updateTodo } = useTodoContext();
   const [filter, setFilter] = useState<string>('全て表示');
   const [sortOrder, setSortOrder] = useState<string>('昇順');
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
-
-  const handleAddTodo = (todo: Todo) => {
-    setTodos((prev) => (editingTodo ? prev.map((t) => (t.id === todo.id ? todo : t)) : [...prev, todo]));
-    setEditingTodo(null);
-  };
 
   const handleEditTodo = (id: number) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
@@ -20,7 +16,7 @@ const TodoList: React.FC = () => {
   };
 
   const handleDeleteTodo = (id: number) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    // ここでdeleteTodoをコンテキストから取得して呼び出す必要がある
   };
 
   const filteredTodos = todos.filter((todo) =>
@@ -35,7 +31,6 @@ const TodoList: React.FC = () => {
     <div>
       <h1>Todoリスト</h1>
 
-      {/* フィルター */}
       <label>
         フィルター:
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -46,7 +41,6 @@ const TodoList: React.FC = () => {
         </select>
       </label>
 
-      {/* ソート */}
       <label>
         ソート:
         <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
@@ -55,17 +49,25 @@ const TodoList: React.FC = () => {
         </select>
       </label>
 
-      {/* フォーム */}
-      <TodoForm onSave={handleAddTodo} initialData={editingTodo || undefined} />
+      <TodoForm
+        onSave={(todo) => {
+          if (todo.id) {
+            updateTodo(todo.id, { title: todo.title, status: todo.status });
+          } else {
+            addTodo(todo.title, todo.status);
+          }
+          setEditingTodo(null);
+        }}
+        initialData={editingTodo || undefined}
+      />
 
-      {/* リスト */}
       <ul>
         {sortedTodos.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}
             onEdit={handleEditTodo}
-            onDelete={handleDeleteTodo}
+            onDelete={(id) => handleDeleteTodo(id)}
           />
         ))}
       </ul>

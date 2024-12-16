@@ -1,4 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, ChakraProviderProps } from '@chakra-ui/react';
 import { AuthProvider } from '../context/AuthContext';
 import AuthModal from '../components/AuthModal';
 
@@ -14,4 +14,3 @@ function MyApp({ Component, pageProps }: any) {
 }
 
 export default MyApp;
-

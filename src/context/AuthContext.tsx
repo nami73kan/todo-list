@@ -1,8 +1,9 @@
 import { createContext, useState, useContext, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 type AuthContextType = {
-  user: any;
+  user: User | null;
   signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -11,32 +12,35 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
+  // サインアップ処理
   const signUp = async (email: string, password: string) => {
-    const { user, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
     if (error) {
       console.error("Error signing up:", error.message);
     } else {
-      setUser(user);
+      setUser(data.user); // data.user にアクセス
     }
   };
 
+  // サインイン処理
   const signIn = async (email: string, password: string) => {
-    const { user, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
       console.error("Error signing in:", error.message);
     } else {
-      setUser(user);
+      setUser(data.user); // data.user にアクセス
     }
   };
 
+  // サインアウト処理
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);

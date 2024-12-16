@@ -3,8 +3,8 @@ import { useTodoContext } from '../context/TodoContext';
 import { Todo } from '../types/Todo';
 
 type TodoFormProps = {
-  onSave?: (todo: Todo) => void; // 必須ではない関数として定義
-  initialData?: Todo; // 編集時の初期値
+  onSave?: (todo: Todo) => void;
+  initialData?: Todo;
 };
 
 const TodoForm: React.FC<TodoFormProps> = ({ onSave, initialData }) => {

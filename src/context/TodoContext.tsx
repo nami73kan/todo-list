@@ -19,7 +19,6 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
-  // Supabaseからデータを取得
   const fetchTodos = async () => {
     const { data, error } = await supabase.from('todos').select('*');
     if (error) {
@@ -33,7 +32,6 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     fetchTodos();
   }, []);
 
-  // タスクを追加
   const addTodo = async (title: string, status: '未着手' | '着手' | '完了') => {
     const { data, error } = await supabase
       .from('todos')
@@ -47,7 +45,6 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // タスクを更新
   const updateTodo = async (id: number, updatedData: Partial<Todo>) => {
     const { data, error } = await supabase
       .from('todos')
@@ -64,7 +61,6 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // タスクを削除
   const deleteTodo = async (id: number) => {
     const { error } = await supabase.from('todos').delete().eq('id', id);
     if (error) {

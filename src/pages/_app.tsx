@@ -1,11 +1,17 @@
-import '../styles/globals.css';
-import type { AppProps } from 'next/app';
-import { TodoProvider } from '../context/TodoContext';
+import { ChakraProvider } from '@chakra-ui/react';
+import { AuthProvider } from '../context/AuthContext';
+import AuthModal from '../components/AuthModal';
 
-export default function App({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: any) {
   return (
-    <TodoProvider>
-      <Component {...pageProps} />
-    </TodoProvider>
+    <ChakraProvider>
+      <AuthProvider>
+        <AuthModal />
+        <Component {...pageProps} />
+      </AuthProvider>
+    </ChakraProvider>
   );
 }
+
+export default MyApp;
+

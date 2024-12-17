@@ -5,7 +5,7 @@ import { useTodoContext } from '../context/TodoContext';
 import { Todo } from '../types/Todo';
 
 const TodoList: React.FC = () => {
-  const { todos, addTodo, updateTodo } = useTodoContext();
+  const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext(); // deleteTodoを追加
   const [filter, setFilter] = useState<string>('全て表示');
   const [sortOrder, setSortOrder] = useState<string>('昇順');
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
@@ -16,7 +16,7 @@ const TodoList: React.FC = () => {
   };
 
   const handleDeleteTodo = (id: number) => {
-    // ここでdeleteTodoをコンテキストから取得して呼び出す必要がある
+    deleteTodo(id); // コンテキストから呼び出し
   };
 
   const filteredTodos = todos.filter((todo) =>
@@ -67,7 +67,7 @@ const TodoList: React.FC = () => {
             key={todo.id}
             todo={todo}
             onEdit={handleEditTodo}
-            onDelete={(id) => handleDeleteTodo(id)}
+            onDelete={handleDeleteTodo} // 修正
           />
         ))}
       </ul>

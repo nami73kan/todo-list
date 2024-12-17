@@ -1,13 +1,14 @@
-import { ChakraProvider, ChakraProviderProps } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from '../context/AuthContext';
-import AuthModal from '../components/AuthModal';
+import { TodoProvider } from '../context/TodoContext'; // TodoProvider のインポート
 
 function MyApp({ Component, pageProps }: any) {
   return (
     <ChakraProvider>
       <AuthProvider>
-        <AuthModal />
-        <Component {...pageProps} />
+        <TodoProvider>
+          <Component {...pageProps} />
+        </TodoProvider>
       </AuthProvider>
     </ChakraProvider>
   );

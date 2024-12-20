@@ -1,14 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TodoForm from './TodoForm';
 import TodoItem from './TodoItem';
-import { useTodoContext } from '../context/TodoContext';
-import { Todo } from '../types/Todo';
+import { supabase } from '../lib/supabase';
+
+type Todo = {
+  id: number;
+  title: string;
+  status: '未着手' | '着手' | '完了';
+};
 
 const TodoList: React.FC = () => {
-  const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext(); // deleteTodoを追加
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<string>('全て表示');
   const [sortOrder, setSortOrder] = useState<string>('昇順');
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+
+  const fetchTodos = async () => {
+    const { data, error } = await supabase.from('todos').select('*');
+    if (error) {
+      console.error('Error fetching todos:', error);
+    } else {
+      setTodos(data as Todo[]);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const addTodo = async (title: string, status: '未着手' | '着手' | '完了') => {
+    const { data, error } = await supabase
+      .from('todos')
+      .insert([{ title, status }])
+      .select();
+
+    if (error) {
+      console.error('Error adding todo:', error);
+    } else {
+      setTodos((prev) => [...prev, ...(data as Todo[])]);
+    }
+  };
+
+  const updateTodo = async (id: number, updatedData: Partial<Todo>) => {
+    const { data, error } = await supabase
+      .from('todos')
+      .update(updatedData)
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Error updating todo:', error);
+    } else {
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) => (todo.id === id ? { ...todo, ...updatedData } : todo))
+      );
+    }
+  };
+
+  const deleteTodo = async (id: number) => {
+    const { error } = await supabase.from('todos').delete().eq('id', id);
+    if (error) {
+      console.error('Error deleting todo:', error);
+    } else {
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    }
+  };
 
   const handleEditTodo = (id: number) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
@@ -16,7 +72,7 @@ const TodoList: React.FC = () => {
   };
 
   const handleDeleteTodo = (id: number) => {
-    deleteTodo(id); // コンテキストから呼び出し
+    deleteTodo(id);
   };
 
   const filteredTodos = todos.filter((todo) =>
@@ -67,7 +123,7 @@ const TodoList: React.FC = () => {
             key={todo.id}
             todo={todo}
             onEdit={handleEditTodo}
-            onDelete={handleDeleteTodo} // 修正
+            onDelete={handleDeleteTodo}
           />
         ))}
       </ul>

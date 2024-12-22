@@ -25,10 +25,16 @@ const TodoList: React.FC = () => {
   
     if (error) {
       console.error('Error fetching todos:', error);
-    } else if (data) { // dataが存在するかチェック
-      setTodos(data as Todo[]); // dataを使用するので警告は出なくなる
+      return; // エラーの場合は処理を終了
+    }
+  
+    if (data && data.length > 0) { // dataが存在し、空ではない場合のみ処理
+      setTodos(data as Todo[]); // dataをセット
+    } else {
+      console.log('No todos found.'); // ログで空データを記録 (デバッグ用)
     }
   };
+  
   
 
   useEffect(() => {

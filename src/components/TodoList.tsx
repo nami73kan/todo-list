@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import TodoForm from './TodoForm';
 import TodoItem from './TodoItem';
 import { supabase } from '../lib/supabase';
+import AuthModal from './AuthModal';
+import { useAuthContext } from '../context/AuthContext';
 
 type Todo = {
   id: number;
@@ -14,6 +16,9 @@ const TodoList: React.FC = () => {
   const [filter, setFilter] = useState<string>('全て表示');
   const [sortOrder, setSortOrder] = useState<string>('昇順');
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+
+  // --- ログイン情報 ---
+  const { user, signOut } = useAuthContext();
 
   const fetchTodos = async () => {
     const { data, error } = await supabase.from('todos').select('*');
@@ -87,23 +92,26 @@ const TodoList: React.FC = () => {
     <div>
       <h1>Todoリスト</h1>
 
-      <label>
-        フィルター:
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="全て表示">全て表示</option>
-          <option value="未着手">未着手</option>
-          <option value="着手">着手</option>
-          <option value="完了">完了</option>
-        </select>
-      </label>
+      {/* フィルターとソートの配置 */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          フィルター:
+          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="全て表示">全て表示</option>
+            <option value="未着手">未着手</option>
+            <option value="着手">着手</option>
+            <option value="完了">完了</option>
+          </select>
+        </label>
 
-      <label>
-        ソート:
-        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-          <option value="昇順">昇順</option>
-          <option value="降順">降順</option>
-        </select>
-      </label>
+        <label style={{ marginLeft: '10px' }}>
+          ソート:
+          <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+            <option value="昇順">昇順</option>
+            <option value="降順">降順</option>
+          </select>
+        </label>
+      </div>
 
       <TodoForm
         onSave={(todo) => {
@@ -127,6 +135,18 @@ const TodoList: React.FC = () => {
           />
         ))}
       </ul>
+
+      {/* ログイン・サインアップの配置 */}
+      <div style={{ marginTop: '40px', textAlign: 'center' }}>
+        {user ? (
+          <div>
+            <p>ログイン中: {user.email}</p>
+            <button onClick={signOut}>ログアウト</button>
+          </div>
+        ) : (
+          <AuthModal />
+        )}
+      </div>
     </div>
   );
 };

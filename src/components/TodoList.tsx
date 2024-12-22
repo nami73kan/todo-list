@@ -22,12 +22,14 @@ const TodoList: React.FC = () => {
 
   const fetchTodos = async () => {
     const { data, error } = await supabase.from('todos').select('*');
+  
     if (error) {
       console.error('Error fetching todos:', error);
-    } else {
-      setTodos(data as Todo[]);
+    } else if (data) { // dataが存在するかチェック
+      setTodos(data as Todo[]); // dataを使用するので警告は出なくなる
     }
   };
+  
 
   useEffect(() => {
     fetchTodos();

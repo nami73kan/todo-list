@@ -1,14 +1,12 @@
+import { AppProps } from 'next/app'; // AppProps型をインポート
 import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from '../context/AuthContext';
-import { TodoProvider } from '../context/TodoContext'; // TodoProvider のインポート
 
-function MyApp({ Component, pageProps }: any) {
+function MyApp({ Component, pageProps }: AppProps) { // 型をAppPropsに変更
   return (
     <ChakraProvider>
       <AuthProvider>
-        <TodoProvider>
-          <Component {...pageProps} />
-        </TodoProvider>
+        <Component {...pageProps} />
       </AuthProvider>
     </ChakraProvider>
   );

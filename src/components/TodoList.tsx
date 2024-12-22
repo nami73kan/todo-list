@@ -46,13 +46,14 @@ const TodoList: React.FC = () => {
       .from('todos')
       .insert([{ title, status }])
       .select();
-
+  
     if (error) {
       console.error('Error adding todo:', error);
-    } else {
+    } else if (data) { // データが存在する場合のみ追加
       setTodos((prev) => [...prev, ...(data as Todo[])]);
     }
   };
+  
 
   const updateTodo = async (id: number, updatedData: Partial<Todo>) => {
     const { data, error } = await supabase
@@ -60,15 +61,18 @@ const TodoList: React.FC = () => {
       .update(updatedData)
       .eq('id', id)
       .select();
-
+  
     if (error) {
       console.error('Error updating todo:', error);
-    } else {
+    } else if (data) { // データを使う処理を追加
       setTodos((prevTodos) =>
-        prevTodos.map((todo) => (todo.id === id ? { ...todo, ...updatedData } : todo))
+        prevTodos.map((todo) =>
+          todo.id === id ? { ...todo, ...updatedData } : todo
+        )
       );
     }
   };
+  
 
   const deleteTodo = async (id: number) => {
     const { error } = await supabase.from('todos').delete().eq('id', id);

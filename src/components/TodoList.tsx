@@ -124,29 +124,34 @@ const TodoList: React.FC = () => {
           </select>
         </label>
       </div>
+      {user && (
+  <TodoForm
+    onSave={(todo) => {
+      if (todo.id) {
+        updateTodo(todo.id, { title: todo.title, status: todo.status });
+      } else {
+        addTodo(todo.title, todo.status);
+      }
+      setEditingTodo(null);
+    }}
+    initialData={editingTodo || undefined}
+  />
+)}
 
-      <TodoForm
-        onSave={(todo) => {
-          if (todo.id) {
-            updateTodo(todo.id, { title: todo.title, status: todo.status });
-          } else {
-            addTodo(todo.title, todo.status);
-          }
-          setEditingTodo(null);
-        }}
-        initialData={editingTodo || undefined}
-      />
 
-      <ul>
-        {sortedTodos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onEdit={handleEditTodo}
-            onDelete={handleDeleteTodo}
-          />
-        ))}
-      </ul>
+<ul>
+  {sortedTodos.map((todo) => (
+    <TodoItem
+      key={todo.id}
+      todo={todo}
+      onEdit={handleEditTodo}
+      onDelete={handleDeleteTodo}
+      isLoggedIn={!!user} // ログイン状態を渡す
+    />
+  ))}
+</ul>
+
+
 
       {/* ログイン・サインアップの配置 */}
       <div style={{ marginTop: '40px', textAlign: 'center' }}>

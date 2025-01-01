@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todoリストアプリ
 
-## Getting Started
+## 使用技術一覧
+- React (Next.js)
+- TypeScript
+- Supabase
+- Chakra UI
+- HTML/CSS
 
-First, run the development server:
+## アプリをつくったきっかけ
+歯科医院のバックヤードで使える在庫管理系のアプリを作りたかったが、なにから手をつければいいかなかなかまとまらないのでリストアップして可視化できる媒体を作成。
 
+## アプリ機能説明
+- 新規登録＆ログイン (Supabase認証を使用)
+- タスクの登録
+- タスクの編集
+- ステータスの変更
+- タスクの削除
+- フィルター機能 (ステータス別表示)
+- ソート機能 (昇順/降順)
+
+## アプリURL
+[Todoリストアプリ](https://todo-list-r1n7opmad-nami73kans-projects.vercel.app/)
+
+## テストアカウント
+- メールアドレス：
+- パスワード：Password1234123
+
+## 開発環境の構築方法
+
+### 構築環境
+- OS: Windows 11
+- フレームワーク: Next.js
+- データベース: Supabase
+
+### インストール手順
+
+1. リポジトリをクローンします。
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/nami73kan/todo-list.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. クローンしたディレクトリに移動します。
+```bash
+cd todo-list
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. 環境変数ファイルを作成します。
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. 必要なパッケージをインストールします。
+```bash
+npm install
+```
 
-## Learn More
+5. ローカルサーバーを起動します。
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Supabaseの環境設定
+- Supabaseプロジェクトを作成し、APIキーとデータベースURLを.envに追加します。
+```
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+7. データベースのセットアップ
+- SupabaseのSQLエディタを使ってテーブルを作成します。
+```
+CREATE TABLE todos (
+  id SERIAL PRIMARY KEY,
+  title TEXT,
+  status TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Languages
+- TypeScript: 70%
+- JavaScript: 20%
+- HTML/CSS: 10%
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
+© 2025  [GitHub リポジトリ](https://github.com/nami73kan/todo-list.git)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 //import { useTodoContext } from '../context/TodoContext';
+import { Button } from '@chakra-ui/react'; 
 import { Todo } from '../types/Todo';
 
 type TodoFormProps = {
@@ -19,12 +20,19 @@ const TodoForm: React.FC<TodoFormProps> = ({ onSave, initialData }) => {
   }, [initialData]);
 
   const handleSave = () => {
+    // タイトルが空白の場合は処理を中断
+    if (!title.trim()) {
+      alert('タイトルを入力してください！'); // ユーザーに警告
+      return; // 処理終了
+    }
+  
     if (onSave) {
       onSave({ ...initialData, title, status } as Todo);
     }
     setTitle('');
     setStatus('未着手');
   };
+  
 
   return (
     <div>
@@ -39,7 +47,15 @@ const TodoForm: React.FC<TodoFormProps> = ({ onSave, initialData }) => {
         <option value="着手">着手</option>
         <option value="完了">完了</option>
       </select>
-      <button onClick={handleSave}>{initialData ? '更新' : '追加'}</button>
+      <Button
+  style={{ backgroundColor: '#7AC87A', color: '#fff' }}
+  size="sm"
+  onClick={handleSave}
+  isDisabled={!title.trim()}
+>
+  {initialData ? '更新' : '追加'}
+</Button>
+
     </div>
   );
 };

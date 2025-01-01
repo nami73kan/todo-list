@@ -4,6 +4,7 @@ import TodoItem from './TodoItem';
 import { supabase } from '../lib/supabase';
 import AuthModal from './AuthModal';
 import { useAuthContext } from '../context/AuthContext';
+import { Button } from '@chakra-ui/react';
 
 type Todo = {
   id: number;
@@ -22,63 +23,34 @@ const TodoList: React.FC = () => {
 
   const fetchTodos = async () => {
     const { data, error } = await supabase.from('todos').select('*');
-  
-    if (error) {
-      console.error('Error fetching todos:', error);
-      return; // エラーの場合は処理を終了
-    }
-  
-    if (data && data.length > 0) { // dataが存在し、空ではない場合のみ処理
-      setTodos(data as Todo[]); // dataをセット
-    } else {
-      console.log('No todos found.'); // ログで空データを記録 (デバッグ用)
+    if (!error && data) {
+      setTodos(data as Todo[]);
     }
   };
-  
-  
 
   useEffect(() => {
     fetchTodos();
   }, []);
 
   const addTodo = async (title: string, status: '未着手' | '着手' | '完了') => {
-    const { data, error } = await supabase
-      .from('todos')
-      .insert([{ title, status }])
-      .select();
-  
-    if (error) {
-      console.error('Error adding todo:', error);
-    } else if (data) { // データが存在する場合のみ追加
+    const { data, error } = await supabase.from('todos').insert([{ title, status }]).select();
+    if (!error && data) {
       setTodos((prev) => [...prev, ...(data as Todo[])]);
     }
   };
-  
 
   const updateTodo = async (id: number, updatedData: Partial<Todo>) => {
-    const { data, error } = await supabase
-      .from('todos')
-      .update(updatedData)
-      .eq('id', id)
-      .select();
-  
-    if (error) {
-      console.error('Error updating todo:', error);
-    } else if (data) { // データを使う処理を追加
+    const { error } = await supabase.from('todos').update(updatedData).eq('id', id);
+    if (!error) {
       setTodos((prevTodos) =>
-        prevTodos.map((todo) =>
-          todo.id === id ? { ...todo, ...updatedData } : todo
-        )
+        prevTodos.map((todo) => (todo.id === id ? { ...todo, ...updatedData } : todo))
       );
     }
   };
-  
 
   const deleteTodo = async (id: number) => {
     const { error } = await supabase.from('todos').delete().eq('id', id);
-    if (error) {
-      console.error('Error deleting todo:', error);
-    } else {
+    if (!error) {
       setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
     }
   };
@@ -101,10 +73,10 @@ const TodoList: React.FC = () => {
   );
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', padding: '10px', boxSizing: 'border-box' }}>
       <h1>Todoリスト</h1>
 
-      {/* フィルターとソートの配置 */}
+      {/* フィルターとソート */}
       <div style={{ marginBottom: '20px' }}>
         <label>
           フィルター:
@@ -124,41 +96,47 @@ const TodoList: React.FC = () => {
           </select>
         </label>
       </div>
-      {user && (
-  <TodoForm
-    onSave={(todo) => {
-      if (todo.id) {
-        updateTodo(todo.id, { title: todo.title, status: todo.status });
-      } else {
-        addTodo(todo.title, todo.status);
-      }
-      setEditingTodo(null);
-    }}
-    initialData={editingTodo || undefined}
-  />
-)}
 
+      <TodoForm
+        onSave={(todo) => {
+          if (todo.id) {
+            updateTodo(todo.id, { title: todo.title, status: todo.status });
+          } else {
+            addTodo(todo.title, todo.status);
+          }
+          setEditingTodo(null);
+        }}
+        initialData={editingTodo || undefined}
+      />
 
-<ul>
-  {sortedTodos.map((todo) => (
-    <TodoItem
-      key={todo.id}
-      todo={todo}
-      onEdit={handleEditTodo}
-      onDelete={handleDeleteTodo}
-      isLoggedIn={!!user} // ログイン状態を渡す
-    />
-  ))}
-</ul>
+      <ul>
+        {sortedTodos.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onEdit={handleEditTodo}
+            onDelete={handleDeleteTodo}
+            isLoggedIn={!!user}
+          />
+        ))}
+      </ul>
 
-
-
-      {/* ログイン・サインアップの配置 */}
-      <div style={{ marginTop: '40px', textAlign: 'center' }}>
+      {/* ログイン中の表示とログアウトボタンを下方に配置 */}
+      <div
+        style={{
+          marginTop: '20px',
+          textAlign: 'center',
+          padding: '10px',
+          borderTop: '1px solid #ccc', // 上に線を追加
+          width: '100%',
+        }}
+      >
         {user ? (
           <div>
             <p>ログイン中: {user.email}</p>
-            <button onClick={signOut}>ログアウト</button>
+            <Button colorScheme="red" onClick={signOut}>
+              ログアウト
+            </Button>
           </div>
         ) : (
           <AuthModal />
